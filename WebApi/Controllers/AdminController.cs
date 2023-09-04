@@ -92,7 +92,7 @@ namespace WebApi.Controllers
         static private string GenerateToken(string username)
             {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes("this is my custom Secret key for authentication");
+            var key = Encoding.UTF8.GetBytes("secret key");
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]

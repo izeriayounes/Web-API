@@ -10,5 +10,8 @@ public class Parrainage
     public int? MontantKafala { get; set; }
     public bool IsActive { get; set; }
     public string? Commentaire { get; set; }
+
+    public DateTime? DateCreated = DateTime.UtcNow;
+
 }
 

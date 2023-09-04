@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Dto;
 using WebApi.Interfaces;
@@ -6,20 +7,18 @@ using WebApi.Models;
 
 namespace WebApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class EnfantsController : ControllerBase
     {
         private readonly IEnfantRepository _enfantRepository;
-        private readonly IFamilleRepository _fammileRepository;
         private readonly IMapper _mapper;
 
         public EnfantsController(IEnfantRepository enfantRepository,
-                                IFamilleRepository fammileRepository,
                                 IMapper mapper)
         {
             _enfantRepository = enfantRepository;
-            _fammileRepository = fammileRepository;
             _mapper = mapper;
         }
 
@@ -71,11 +70,22 @@ namespace WebApi.Controllers
             return Ok(enfant);
         }
 
+        [HttpGet("enfants-with-no-famille")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<EnfantDto>))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult GetEnfantsWithNoFamille()
+        {
+            var enfants = _mapper.Map<List<EnfantDto>>(_enfantRepository.GetEnfantsWithNoFamille());
+
+            return Ok(enfants);
+        }
+
         // POST: api/Enfants
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreateEnfant([FromQuery] int familleId, EnfantDto enfantCreate)
+        public IActionResult CreateEnfant(EnfantDto enfantCreate)
         {
             if (enfantCreate == null)
                 return BadRequest();
@@ -84,9 +94,6 @@ namespace WebApi.Controllers
                 return BadRequest(ModelState);
 
             var enfant = _mapper.Map<Enfant>(enfantCreate);
-
-            if (familleId != 0)
-                enfant.Famille = _fammileRepository.GetFamille(familleId);
 
             if (!_enfantRepository.CreateEnfant(enfant))
             {

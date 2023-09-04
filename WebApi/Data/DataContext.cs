@@ -23,12 +23,14 @@ namespace WebApi.Data
                 .HasOne(p => p.Enfant)
                 .WithMany(pc => pc.Parrainages)
                 .HasForeignKey(p => p.EnfantId);
+
             modelBuilder.Entity<Parrainage>()
                 .HasOne(p => p.Parrain)
                 .WithMany(pc => pc.Parrainages)
                 .HasForeignKey(c => c.ParrainId);
 
             modelBuilder.Entity<Admin>();
+
         }
 
     }

@@ -21,7 +21,7 @@ namespace WebApi.Repository
 
         public ICollection<Parrain> GetParrains()
         {
-            return _context.Parrains.ToList();
+            return _context.Parrains.OrderByDescending(p => p.Id).ToList();
         }
         public ICollection<Enfant> GetEnfantsByParrain(int ParrainId)
         {

@@ -1,10 +1,11 @@
-﻿using BCrypt.Net;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Dto;
-using WebApi.Helper;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using WebApi.Interfaces;
 using WebApi.Models;
-using WebApi.Repository;
 
 namespace WebApi.Controllers
 {
@@ -13,12 +14,10 @@ namespace WebApi.Controllers
     public class AdminController : ControllerBase
     {
         private readonly IAdminRepository _adminRepository;
-        private readonly JwtService _jwtService;
 
-        public AdminController(IAdminRepository adminRepository, JwtService jwtService)
+        public AdminController(IAdminRepository adminRepository)
         {
             _adminRepository = adminRepository;
-            _jwtService = jwtService;
         }
 
         //Get: api/Admin
@@ -77,10 +76,34 @@ namespace WebApi.Controllers
             if (!BCrypt.Net.BCrypt.Verify(adminLogin.Password, admin.Password))
                 return BadRequest(new { message = "invalid credentials" });
 
-            return Ok(new
+            var token = GenerateToken(admin.UserName);
+
+            return Ok(new { token, Message = "success" });
+
+        }
+
+        [Authorize] 
+        [HttpGet("validate-token")]
+        public IActionResult ValidateToken()
+        {
+            return Ok(new { message = "Token is valid" });
+        }
+
+        static private string GenerateToken(string username)
             {
-                Message = "success"
-            });
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes("this is my custom Secret key for authentication");
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.Name, username)
+                }),
+                Expires = DateTime.UtcNow.AddDays(1), // Set expiration time
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
 
         //[HttpPost("logout")]
@@ -93,24 +116,6 @@ namespace WebApi.Controllers
         //    {
         //        message = "success"
         //    });
-        //}
-
-        //[HttpGet("admin")]
-        //public IActionResult Admin()
-        //{
-        //    try
-        //    {
-        //        var jwt = Request.Cookies["jwt"];
-        //        var token = _jwtService.Verify(jwt);
-        //        var admin = _adminRepository.GetAdmin();
-
-        //        return Ok(admin);
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        Console.WriteLine(exception);
-        //        return Unauthorized();
-        //    }
         //}
 
         [HttpPut()]

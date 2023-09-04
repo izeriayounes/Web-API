@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Dto;
 using WebApi.Interfaces;
@@ -6,6 +7,7 @@ using WebApi.Models;
 
 namespace WebApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class FamillesController : ControllerBase
@@ -78,9 +80,7 @@ namespace WebApi.Controllers
             if (familleCreate == null)
                 return BadRequest(ModelState);
 
-            var familleByCode = _familleRepository.GetFamilleByCode(familleCreate.CodeFamille);
-
-            if (familleByCode != null)
+            if (_familleRepository.FamilleExists(familleCreate.CodeFamille))
                 return BadRequest("CodeFamille already exists");
 
             if (!ModelState.IsValid)

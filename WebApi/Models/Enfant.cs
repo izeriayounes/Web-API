@@ -41,6 +41,7 @@ public class Enfant
     public byte[]? ProfilePicture { get; set; }
 		    
     public Famille? Famille { get; set; }
+    public int? FamilleId { get; set; }
     public ICollection<Parrain> Parrains { get; set; }
     public ICollection<Parrainage> Parrainages { get; set; }
 }

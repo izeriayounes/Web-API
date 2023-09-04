@@ -20,14 +20,9 @@ namespace WebApi.Repository
 
         public ICollection<Famille> GetFamilles()
         {
-            return _context.Familles.ToList();
+            return _context.Familles.OrderByDescending(f => f.Id).ToList();
         }
 
-	    public Famille GetFamilleByCode(string code)
-	    {
-		    return _context.Familles.Where(f => f.CodeFamille == code).FirstOrDefault();	
-		
-	    }
         public ICollection<Enfant> GetEnfantsByFamille(int familleId)
         {
             var enfants =
@@ -88,6 +83,10 @@ namespace WebApi.Repository
             return saved > 0;
         }
 
+        public bool FamilleExists(string code)
+        {
+            return _context.Familles.Any(f => f.CodeFamille == code);
+        }
     }
 
 }

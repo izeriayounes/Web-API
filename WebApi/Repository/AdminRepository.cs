@@ -1,6 +1,4 @@
-﻿using BCrypt.Net;
-using Microsoft.EntityFrameworkCore;
-using WebApi.Data;
+﻿using WebApi.Data;
 using WebApi.Interfaces;
 using WebApi.Models;
 

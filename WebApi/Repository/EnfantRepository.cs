@@ -1,6 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Query.Internal;
+﻿using Microsoft.EntityFrameworkCore;
 using WebApi.Data;
-using WebApi.Dto;
 using WebApi.Interfaces;
 using WebApi.Models;
 
@@ -21,9 +20,9 @@ namespace WebApi.Repository
             return _context.Enfants.Where(e => e.Id == id).FirstOrDefault();
         }
 
-        public ICollection<Enfant> GetEnfants()
+        public IEnumerable<Enfant> GetEnfants()
         {
-            return _context.Enfants.ToList();
+            return _context.Enfants.OrderByDescending(e => e.Id).AsEnumerable();
         }
 
         public bool CreateEnfant(Enfant enfant)
@@ -61,10 +60,15 @@ namespace WebApi.Repository
 
         public bool Save()
         {
-            var saved = _context.SaveChanges();
+                var saved = _context.SaveChanges();
             return saved > 0;
         }
 
+        public ICollection<Enfant> GetEnfantsWithNoFamille()
+        {
+            var enfants = _context.Enfants.OrderByDescending(e => e.Id).Where(e => e.FamilleId == null).ToList();
+            return enfants;
+        }
     }
 }
 

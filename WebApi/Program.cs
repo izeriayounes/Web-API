@@ -22,13 +22,7 @@ builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("corspolicy" ,builder =>
-    {
-        builder.WithOrigins("http://localhost:3000", "https://admin-management-platform.vercel.app", "http://192.168.56.1:3000", "https://aec8-196-89-1-210.ngrok-free.app").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
-    });
-});
+builder.Services.AddCors();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
@@ -38,7 +32,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authentication"))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("secret key"))
             };
         });
 
